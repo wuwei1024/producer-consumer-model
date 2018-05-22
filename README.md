@@ -1,2 +1,2 @@
-# producer-consumer-problem
-生产者-消费者问题
+# producer-consumer-model
+生产者-消费者模型
