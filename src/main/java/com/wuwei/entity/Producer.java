@@ -6,17 +6,30 @@ package com.wuwei.entity;
  * @author wuwei
  * @date 2018/5/22 9:51
  */
-public class Producer extends Thread {
+public class Producer {
     private String producer;
-    private Storage storage;
 
-    public Producer(String producer, Storage storage) {
+    public Producer(String producer) {
         this.producer = producer;
-        this.storage = storage;
     }
 
-    @Override
-    public void run() {
-        storage.produce(producer);
+    // 生产产品
+    public void produce() {
+        synchronized (Storage.class) {
+            // 如果仓库已满
+            while (Storage.isFull()) {
+                System.out.println("仓库已满，【" + producer + "】： 暂时不能执行生产任务!");
+                try {
+                    // 生产阻塞
+                    Storage.class.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            // 生产产品
+            Storage.add(new Object());
+            System.out.println("【" + producer + "】：生产了一个产品	【现仓储量为】:" + Storage.size());
+            Storage.class.notifyAll();
+        }
     }
 }
