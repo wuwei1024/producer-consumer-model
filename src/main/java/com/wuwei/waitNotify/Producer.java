@@ -1,4 +1,4 @@
-package com.wuwei.entity;
+package com.wuwei.waitNotify;
 
 /**
  * 生产者
