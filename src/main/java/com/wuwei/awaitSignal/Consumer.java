@@ -24,20 +24,21 @@ public class Consumer {
     public void consume() {
         // 获得锁
         LOCK.lock();
-        // 如果仓库存储量不足
-        while (Storage.isEmpty()) {
-            System.out.println("仓库已空，【" + consumer + "】： 暂时不能执行消费任务!");
-            try {
+        try {
+            // 如果仓库存储量不足
+            while (Storage.isEmpty()) {
+                System.out.println("仓库已空，【" + consumer + "】： 暂时不能执行消费任务!");
                 // 消费阻塞
                 EMPTY.await();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
+            Storage.remove();
+            System.out.println("【" + consumer + "】：消费了一个产品	【现仓储量为】:" + Storage.size());
+            FULL.signalAll();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            // 释放锁
+            LOCK.unlock();
         }
-        Storage.remove();
-        System.out.println("【" + consumer + "】：消费了一个产品	【现仓储量为】:" + Storage.size());
-        FULL.signalAll();
-        // 释放锁
-        LOCK.unlock();
     }
 }

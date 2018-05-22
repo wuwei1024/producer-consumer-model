@@ -23,21 +23,22 @@ public class Producer {
     // 生产产品
     public void produce() {
         LOCK.lock();
-        // 如果仓库已满
-        while (Storage.isFull()) {
-            System.out.println("仓库已满，【" + producer + "】： 暂时不能执行生产任务!");
-            try {
+        try {
+            // 如果仓库已满
+            while (Storage.isFull()) {
+                System.out.println("仓库已满，【" + producer + "】： 暂时不能执行生产任务!");
                 // 生产阻塞
                 FULL.await();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
+            // 生产产品
+            Storage.add(new Object());
+            System.out.println("【" + producer + "】：生产了一个产品	【现仓储量为】:" + Storage.size());
+            EMPTY.signalAll();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            // 释放锁
+            LOCK.unlock();
         }
-        // 生产产品
-        Storage.add(new Object());
-        System.out.println("【" + producer + "】：生产了一个产品	【现仓储量为】:" + Storage.size());
-        EMPTY.signalAll();
-        // 释放锁
-        LOCK.unlock();
     }
 }
